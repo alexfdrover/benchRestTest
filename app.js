@@ -24,15 +24,10 @@ const calculateTotalPages = (count) => {
   return Math.ceil(count / MAX_TRANSACTIONS_PER_PAGE);
 }
 
-// INPUT:   no input
+// INPUT:   a sorted array of unique transaction dates
 // OUTPUT:  no output
 // EFFECT:  logs to console the end-of-day balance of the account of the form `${date} ${balance.toFixed(2)}`
-const logBalancesToConsole = () => {
-  let dates = Object.keys(txHash);
-  dates.sort((a, b) => {
-    return a > b ? 1 : -1;
-  });
-
+const logBalancesToConsole = (dates) => {
   let balance = STARTING_ACCOUNT_BALANCE;
   dates.forEach(date => {
     let amount = txHash[date];
@@ -90,7 +85,6 @@ const main = async () => {
   // Fetches data from server multiple pages at a time
   // When MAX_SIMUL_WORKERS amount of pages are loaded (or when there are no longer valid pages), processes data
   // Repeats this process until out of valid pages
-  // Logs data to console at end
   for (let currentPage = 2; currentPage <= totalPages; currentPage += MAX_SIMUL_WORKERS) {
     let promises = fillPromises(currentPage, totalPages);
     await Promise
@@ -103,8 +97,14 @@ const main = async () => {
      })
      .catch(errorHandler);
   }
-      
-  logBalancesToConsole();
+  
+  // Generates a sorted array of unique transaction dates (ascending)
+  let dates = Object.keys(txHash);
+  dates.sort((a, b) => {
+    return a > b ? 1 : -1;
+  });
+
+  logBalancesToConsole(dates);
 }
 
 const txHash = {};
