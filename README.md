@@ -34,11 +34,12 @@
 ## Limitations / Missing
 1. Expected base URL and pagination pattern is hard-coded E.g. `https://resttest.bench.co/transactions/:pageNumber.json`
 2. If any 'valid' request fails, an error is thrown
+3. Missing tests for following helpers: logBalancesToConsole, errorHandler, fillPromises
 
 ## Improvements
 1. More robust response handling (E.g. how to handle every possible response code?)
 2. More robust error handling (E.g. what if server response isn't RESTful? 200 OK but no data for some reason? malformed response data?)
-3. More robust testing
+3. More robust testing (E.g. wrong input types, edge cases)
 
 ## Shortcuts
 1. 

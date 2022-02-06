@@ -1,6 +1,6 @@
 const { STARTING_ACCOUNT_BALANCE } = require('../constants/constants');
 
-// INPUT:   a sorted array of unique transaction dates
+// INPUT:   a sorted array of unique transaction dates, ascending
 // OUTPUT:  no output
 // EFFECT:  logs to console the end-of-day balance of the account of the form `${date} ${balance.toFixed(2)}`
 const logBalancesToConsole = (txHash, dates) => {
