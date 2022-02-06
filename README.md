@@ -5,7 +5,8 @@
 2. Download Node (this was developed using v14.16.0)
 3. Navigate to repository folder
 4. Run `npm install`
-5. Run `node app.js`
+5. Run `node app.js` to run application
+6. Run `node run test` to run tests
 
 ## Assumptions:
 ### Transaction object
@@ -34,17 +35,24 @@
 ## Limitations / Missing
 1. Expected base URL and pagination pattern is hard-coded E.g. `https://resttest.bench.co/transactions/:pageNumber.json`
 2. If any 'valid' request fails, an error is thrown
-3. Missing tests for following helpers: logBalancesToConsole, errorHandler, fillPromises
+3. Missing tests for following helpers: logBalancesToConsole, errorHandler
 
 ## Improvements
 1. More robust response handling (E.g. how to handle every possible response code?)
 2. More robust error handling (E.g. what if server response isn't RESTful? 200 OK but no data for some reason? malformed response data?)
 3. More robust testing (E.g. wrong input types, edge cases)
-
-## Shortcuts
-1. 
+4. Mock the axios calls so that tests work offline and are resilient to server data changes
 
 ## Trade-offs
 1. The fillPromises function uses MAX_SIMUL_WORKERS to balance between speed and space constraints.
-- High MAX_SIMUL_WORKERS allows for many simultaneous page reads, increasing memory required to store server responses but decreasing overall processing time
-- Low MAX_SIMUL_WORKERS minimizes memory required to store server responses but increases overall processing time
+  - High MAX_SIMUL_WORKERS allows for many simultaneous page reads, increasing memory required to store server responses but decreasing overall processing time
+  - Low MAX_SIMUL_WORKERS minimizes memory required to store server responses but increases overall processing time
+2. logBalancesToConsole is a reduce operation that calculates each day's rolling cumulative balance, and logs it to the console.
+  - As an upside, it saves space and time by iterating across an array of length N only once
+  - As a downside, it has two jobs which complicates logic and testing, as it both calculates and logs
+3. Constants (E.g. MAX_SIMUL_WORKERS) have been extracted to a constants file.
+  - As an upside, this is a centralized location to managed expected values of constants
+  - As a downside, helpers read constants directly from this file, making it harder to build tests for different values of those constants
+
+## Stretch Goals
+1. Mock the axios calls using a library like 'nock'
