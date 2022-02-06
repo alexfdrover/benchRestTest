@@ -54,5 +54,8 @@
   - As an upside, this is a centralized location to managed expected values of constants
   - As a downside, helpers read constants directly from this file, making it harder to build tests for different values of those constants
 
+## Shortcuts
+1. I have chosen to use the `error.response.data` message for error responses from server (E.g. status 4XX or 5XX). That being said, `errorHandler.js` can easily be modified to include custom behaviour for any response code.
+
 ## Stretch Goals
 1. Mock the axios calls using a library like 'nock'
