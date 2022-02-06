@@ -1,70 +1,14 @@
 // IMPORTS
 const axios = require('axios');
+const updateTxHash = require('./helpers/updateTxHash');
+const calculateTotalPages = require('./helpers/calculateTotalPages');
+const logBalancesToConsole = require('./helpers/logBalancesToConsole');
+const errorHandler = require('./helpers/errorHandler');
+const fillPromises = require('./helpers/fillPromises');
 
 // CONSTANTS
-const STARTING_ACCOUNT_BALANCE = 0;
-const BASE_URL = "https://resttest.bench.co/transactions";
-const MAX_TRANSACTIONS_PER_PAGE = 10;
-const MAX_SIMUL_WORKERS = 3;
+const { BASE_URL, MAX_SIMUL_WORKERS } = require('./constants/constants');
 
-// INPUT:   takes an array of transaction objects
-// OUTPUT:  no output
-// EFFECT:  updates txHash. Adds amount of each transaction to the entry for that transaction dates key's value
-const updateTxHash = (transactions) => {
-  transactions.forEach(tx => {
-    if (txHash[tx.Date] === undefined) txHash[tx.Date] = 0;
-    txHash[tx.Date] += Number(tx.Amount);
-  });
-}
-
-// INPUT:   a count of number of transactions for an account
-// OUTPUT:  returns an integer representing the amount of transaction pages to paginate through
-// EFFECT:  no effect
-const calculateTotalPages = (count) => {
-  return Math.ceil(count / MAX_TRANSACTIONS_PER_PAGE);
-}
-
-// INPUT:   a sorted array of unique transaction dates
-// OUTPUT:  no output
-// EFFECT:  logs to console the end-of-day balance of the account of the form `${date} ${balance.toFixed(2)}`
-const logBalancesToConsole = (dates) => {
-  let balance = STARTING_ACCOUNT_BALANCE;
-  dates.forEach(date => {
-    let amount = txHash[date];
-    balance += amount;
-    console.log(`${date} ${balance.toFixed(2)}`);
-  });
-}
-
-// INPUT:   an error
-// OUTPUT:  no output
-// EFFECT:  throws an error
-const errorHandler = (error) => {
-  let message = "";
-  let status = error?.response?.status;
-
-  switch (status) {
-    case undefined:
-      message += error;
-      break;
-    default:
-      message += `${error.response.data}`;
-      break;
-  }
-
-  throw new Error(message)
-}
-
-// INPUT:   a page number and the previously calculated totalPages
-// OUTPUT:  an array of promises of responses from BASE_URL/:page
-// EFFECT:  sends GET requests to BASE_URL/:page
-const fillPromises = (page, totalPages) => {
-  const arr = [];
-  for (let i = 0; i < MAX_SIMUL_WORKERS && page <= totalPages; i += 1) {
-    arr.push(axios.get(`https://resttest.bench.co/transactions/${page++}.json`))
-  }
-  return arr;
-}
 
 const main = async () => {
   let totalPages;
@@ -78,7 +22,7 @@ const main = async () => {
       return response
     })
     .then(result => {
-      updateTxHash(result.data.transactions);
+      updateTxHash(txHash, result.data.transactions);
     })
     .catch(errorHandler);
   
@@ -92,7 +36,7 @@ const main = async () => {
      .then(results => {
        results.forEach(result => {
          let transactions = result.data.transactions;
-         updateTxHash(transactions);
+         updateTxHash(txHash, transactions);
        });
      })
      .catch(errorHandler);
@@ -104,9 +48,8 @@ const main = async () => {
     return a > b ? 1 : -1;
   });
 
-  logBalancesToConsole(dates);
+  logBalancesToConsole(txHash, dates);
 }
 
 const txHash = {};
-
 main();

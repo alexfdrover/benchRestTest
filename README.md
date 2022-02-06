@@ -39,10 +39,9 @@
 1. More robust response handling (E.g. how to handle every possible response code?)
 2. More robust error handling (E.g. what if server response isn't RESTful? 200 OK but no data for some reason? malformed response data?)
 3. More robust testing
-4. Move all helper functions into their own file, refactor accordingly
 
 ## Shortcuts
-1. Helper functions currently reading from global variables
+1. 
 
 ## Trade-offs
 1. The fillPromises function uses MAX_SIMUL_WORKERS to balance between speed and space constraints.
